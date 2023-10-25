@@ -178,6 +178,75 @@ def generatePlot(df, mean1, mean2):
     plt.legend()
     plt.show()
 
+
+    ####### Supervised Method using NBayes #######
+
+def feature_extraction(data):
+    # We want to try categorize the shoe size and height into my generalized categories (the feature of it).
+    # The way we do that is to take the sum of the data points and rounding them into nearest 10.
+
+    # sum of data[0] + data[1] rounded to nearest 10
+    return round((data[0] + data[1]) / 10) * 10
+
+
+def train(data):
+    # declare our model
+    model = {}
+
+    # go through all the data that we have
+    for example in data:
+        # We want to predict the study line based on features (in it's set).
+        # take out study line as the "label"
+        studyLine = example[1]
+
+        # find the feature between shoe and height using our feature extraction
+        f_ShoeHeight = feature_extraction((example[0], example[2]))
+
+        # this is basic declaration, for python syntax
+        # if the studyLine and shoe height is not declared in the dictionary then we want to declare them first
+        # to avoid crashes (when trying to set them)
+        if studyLine not in model:
+            model[studyLine] = {}
+        if f_ShoeHeight not in model[studyLine]:
+            model[studyLine][f_ShoeHeight] = 0
+        if 'observed' not in model[studyLine]:
+            model[studyLine]['observed'] = 0
+
+        # here we increment the number of observations of that given feature to the study line
+        model[studyLine][f_ShoeHeight] = model[studyLine][f_ShoeHeight] + 1
+
+        # keep count of observations in total on this study line
+        model[studyLine]['observed'] = model[studyLine]['observed'] + 1
+
+    # Give back the model
+    return model
+
+# This method can predict an outcome based on a trained model (parameters)
+def predict(model, data):
+    # The features we want to predict based on is (data).
+    # Extract the feature set from our prediction data
+	f_x = feature_extraction(data)
+
+    # declare our maximum likelihood estimation
+	mle = {}
+     
+    # go through all the labels in our model
+	for label in model:
+		mle[label] = 0
+
+		if f_x in model[label]:
+            # if the feature is in the model then we want to calculate the mle
+			mle[label] = model[label][f_x] / model[label]['observed']
+
+    # find the best estimate based on the maximum likelihood estimation
+	best_estimate = ['', 0]
+	for label in mle:
+		if mle[label] > best_estimate[1]: # just local maximum of MLE's
+			best_estimate = [label, mle[label]]
+
+	return best_estimate
+
+
 if __name__ == "__main__":
     # Loading data
     filepath = "Dataminers 2023H2.tsv"
@@ -206,3 +275,126 @@ if __name__ == "__main__":
 
     # Generating viualisation
     generatePlot(df, mean1, mean2)
+
+    data = [
+        ( 44, "MSc Software Design, ITU", 75.59 ), 
+        ( 38, "MSc Software Design, ITU", 167 ), 
+        ( 44, "MSc Software Design, ITU", 192 ), 
+        ( 38, "MSc Software Design, ITU", 66 ), 
+        ( 44, "MSc Software Design, ITU", 184 ), 
+        ( 38, "MSc Software Design, ITU", 64 ), 
+        ( 45, "MSc Software Design, ITU", 72 ), 
+        ( 42, "MSc Software Design, ITU", 71.65 ), 
+        ( 37.5, "MSc Software Design, ITU", 70 ), 
+        ( 42.5, "MSc Software Design, ITU", 70.0787402 ), 
+        ( 39, "MSc Software Design, ITU", 5.6 ), 
+        ( 44, "MSc Software Design, ITU", 75.984 ), 
+        ( 39, "MSc Software Design, ITU", 65 ), 
+        ( 46, "MSc Software Design, ITU", 72 ), 
+        ( 44, "MSc Software Design, ITU", 74 ), 
+        ( 37, "MSc Software Design, ITU", 63.4 ), 
+        ( 42.5, "MSc Software Design, ITU", 71.3 ), 
+        ( 45, "MSc Computer Science, ITU", 187 ), 
+        ( 39, "MSc Software Design, ITU", 174 ), 
+        ( 39, "MSc Software Design, ITU", 69 ), 
+        ( 44, "MSc Software Design, ITU", 73 ), 
+        ( 44, "MSc Software Design, ITU", 6.1 ), 
+        ( 39, "MSc Software Design, ITU", 68 ), 
+        ( 43, "MSc Software Design, ITU", 73.23 ), 
+        ( 38.5, "MSc Software Design, ITU", 68 ), 
+        ( 39, "MSc Software Design, ITU", 178 ), 
+        ( 38, "MSc elsewhere", 70.07 ), 
+        ( 44, "MSc Software Design, ITU", 71 ), 
+        ( 37, "MSc Software Design, ITU", 65 ), 
+        ( 45, "MSc Software Design, ITU", 73 ), 
+        ( 38, "MSc Software Design, ITU", 64 ), 
+        ( 37, "MSc elsewhere", 63.78 ), 
+        ( 38, "MSc Software Design, ITU", 64.56692913 ), 
+        ( 36, "MSc Software Design, ITU", 63 ), 
+        ( 40, "MSc Software Design, ITU", 68 ), 
+        ( 43, "MSc Software Design, ITU", 71 ), 
+        ( 39, "MSc Software Design, ITU", 67.7 ), 
+        ( 42.5, "MSc elsewhere", 68.9 ), 
+        ( 43.5, "MSc Software Design, ITU", 71.2 ), 
+        ( 39, "MSc Software Design, ITU", 68 ), 
+        ( 45, "MSc Software Design, ITU", 73 ), 
+        ( 41, "MSc elsewhere", 70.5 ), 
+        ( 43, "MSc elsewhere", 68 ), 
+        ( 40, "MSc Software Design, ITU", 70.8 ), 
+        ( 9, "MSc Software Design, ITU", 55 ), 
+        ( 46, "MSc elsewhere", 70.9 ), 
+        ( 38, "MSc Software Design, ITU", 173 ), 
+        ( 40, "MSc Software Design, ITU", 183 ), 
+        ( 45, "MSc Software Design, ITU", 74.8 ), 
+        ( 42, "MSc Software Design, ITU", 72.44 ), 
+        ( 37, "MSc Software Design, ITU", 63 ), 
+        ( 39, "MSc Software Design, ITU", 66 ), 
+        ( 45, "MSc Software Design, ITU", 70 ), 
+        ( 38, "MSc elsewhere", 176 ), 
+        ( 41, "MSc Software Design, ITU", 67.71654 ), 
+        ( 39, "MSc elsewhere", 62 ), 
+        ( 39, "MSc Software Design, ITU", 66 ), 
+        ( 41, "MSc Software Design, ITU", 71.26 ), 
+        ( 44, "MSc Software Design, ITU", 72 ), 
+        ( 42, "MSc Software Design, ITU", 70.8 ), 
+        ( 40, "MSc Software Design, ITU", 72 ), 
+        ( 44, "MSc Software Design, ITU", 185 ), 
+        ( 6, "MSc Software Design, ITU", 158 ), 
+        ( 42, "MSc elsewhere", 72 ), 
+        ( 41, "MSc elsewhere", 66.5354331 ), 
+        ( 44, "MSc elsewhere", 75.6 ), 
+        ( 42, "MSc Software Design, ITU", 70 ), 
+        ( 7.5, "MSc Games ITU", 69 ), 
+        ( 39, "MSc elsewhere", 68.89764 ), 
+        ( 44.5, "MSc Software Design, ITU", 75 ), 
+        ( 39, "MSc Software Design, ITU", 168 ), 
+        ( 43, "MSc elsewhere", 75.19 ), 
+        ( 40, "MSc elsewhere", 68 ), 
+        ( 44, "MSc elsewhere", 69 ), 
+        ( 43.5, "MSc Software Design, ITU", 73.62 ), 
+        ( 36, "MSc elsewhere", 5.2 ), 
+        ( 44, "MSc Software Design, ITU", 70 ), 
+        ( 43, "MSc elsewhere", 188 ), 
+        ( 45, "MSc elsewhere", 74 ), 
+        ( 42.5, "MSc Software Design, ITU", 70.1 ), 
+        ( 41.5, "MSc Software Design, ITU", 70.07 ), 
+        ( 41, "MSc Software Design, ITU", 68 ), 
+        ( 37, "MSc Software Design, ITU", 63.77 ), 
+        ( 41.5, "MSc Software Design, ITU", 172 ), 
+        ( 41.5, "MSc elsewhere", 67 ), 
+        ( 38, "MSc Software Design, ITU", 64 ), 
+        ( 38, "MSc Software Design, ITU", 62.59 ), 
+        ( 37, "MSc Software Design, ITU", 150 ), 
+        ( 45, "MSc Software Design, ITU", 186 ), 
+        ( 44.5, "MSc Software Design, ITU", 73.622047 )
+    ]
+
+
+    # normalize data
+    for i in range(len(data)):
+        shoe_size, study_line, height = data[i]
+        
+        # normalize shoe size to european standard
+        if shoe_size < 16:
+            shoe_size = shoe_size * 5
+
+        # normalize the height to cm
+        if height <= 8:
+            # feet to cm
+            height = height * 30.48
+        elif height < 100: # we don't account for dwarfs in normalization
+            # inches to cm
+            height = height * 2.54
+
+        data[i] = (shoe_size, study_line, height)
+
+
+    # Train the model and get the parameters (using above method)
+
+    parameters = train(data)
+
+    # Do a sample prediction with shoe size: 42 and height 185cm!
+    test_value = (42, 185)
+    prediction = predict(parameters, test_value) # best MLE
+
+    print(prediction)
