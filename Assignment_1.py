@@ -175,6 +175,9 @@ def generatePlot(df, mean1, mean2):
     plt.scatter(mean1['shoe_size'], mean1['height'], label='Mean '+str(classes[0]), color='purple')
     plt.scatter(mean2['shoe_size'], mean2['height'], label='Mean '+str(classes[1]), color='orange')
 
+    plt.xlabel('shoe_size')
+    plt.ylabel('height')
+
     plt.legend()
     plt.show()
 
